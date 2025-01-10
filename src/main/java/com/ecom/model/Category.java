@@ -4,9 +4,10 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 
 @Entity(name = "Category") //For Object-Relational Mapping (ORM)
@@ -24,8 +25,8 @@ public class Category {
     @Size(min = 5, message = "Category Name must at least be 5 characters")
     private String categoryName;
 
-//    // Non-Owning Side
-//    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    private List<Product> products;
+    // Non-Owning Side
+    @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE)
+    private List<Product> products;
 
 }
