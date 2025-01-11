@@ -52,11 +52,10 @@ public class Product {
 
 
     // Non-Owning Side
-//    @OneToMany(
-//            mappedBy = "product",
-//            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
-//            fetch = FetchType.EAGER
-//    )
-//    private List<CartItem> cartItems;
+    @OneToMany(
+            mappedBy = "product",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}
+    )
+    private List<CartItem> cartItems;
 
 }

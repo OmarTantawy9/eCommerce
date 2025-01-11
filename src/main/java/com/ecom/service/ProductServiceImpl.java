@@ -2,10 +2,15 @@ package com.ecom.service;
 
 import com.ecom.exceptions.APIException;
 import com.ecom.exceptions.ResourceNotFoundException;
+import com.ecom.model.Cart;
+import com.ecom.model.CartItem;
 import com.ecom.model.Category;
 import com.ecom.model.Product;
+import com.ecom.payload.CartDTO;
 import com.ecom.payload.ProductDTO;
 import com.ecom.payload.ProductResponse;
+import com.ecom.repository.CartItemRepository;
+import com.ecom.repository.CartRepository;
 import com.ecom.repository.CategoryRepository;
 import com.ecom.repository.ProductRepository;
 import jakarta.transaction.Transactional;
@@ -30,9 +35,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final CategoryRepository categoryRepository;
 
-//    private final CartRepository cartRepository;
-
-//    private final CartService cartService;
+    private final CartItemRepository cartItemRepository;
 
     private final ModelMapper modelMapper;
 
@@ -179,35 +182,32 @@ public class ProductServiceImpl implements ProductService {
 
         Product product = modelMapper.map(productDTO, Product.class);
 
+        double oldPrice = productFromDB.getSpecialPrice();
+        double newPrice = product.getPrice() *  (1 - (product.getDiscount() / 100));
+
+        if(newPrice != oldPrice || productFromDB.getQuantity() != product.getQuantity()){
+            List<CartItem> cartItems = cartItemRepository.findCartItemByProduct(productFromDB);
+            cartItems.forEach((cartItem) -> {
+                if(product.getQuantity() < cartItem.getQuantity()){
+                    Cart cart = cartItem.getCart();
+                    cart.setTotalPrice(cart.getTotalPrice() - (oldPrice * cartItem.getQuantity()));
+                    cartItemRepository.delete(cartItem);
+                    return;
+                }
+                Cart cart = cartItem.getCart();
+                cart.setTotalPrice(cart.getTotalPrice() + ((newPrice - oldPrice) * cartItem.getQuantity()));
+            });
+        }
+
         productFromDB.setProductName(product.getProductName());
         productFromDB.setProductDescription(product.getProductDescription());
         productFromDB.setQuantity(product.getQuantity());
         productFromDB.setDiscount(product.getDiscount());
         productFromDB.setPrice(product.getPrice());
+        productFromDB.setSpecialPrice(newPrice);
 
-
-        double specialPrice = product.getPrice() - ((product.getPrice() * (product.getDiscount() / 100)));
-        productFromDB.setSpecialPrice(specialPrice);
 
         Product savedProduct = productRepository.save(productFromDB);
-
-//        List<Cart> carts = cartRepository.findCartsByProductId(productId);
-
-//        List<CartDTO> cartDTOS = carts.stream()
-//                .map(cart -> {
-//                    CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
-//                    List<ProductDTO> productDTOS = cart.getCartItems().stream()
-//                            .map(cartItem -> modelMapper.map(cartItem.getProduct(), ProductDTO.class))
-//                            .toList();
-//                    cartDTO.setProductDTOS(productDTOS);
-//                    return cartDTO;
-//                })
-//                .toList();
-
-//        cartDTOS.forEach(cartDTO -> cartService.updateProductInCarts(cartDTO.getCartId(), productId));
-
-//        carts.forEach(cart -> cartService.updateProductInCarts(cart.getCartId(), productId));
-
         return modelMapper.map(savedProduct, ProductDTO.class);
 
     }
@@ -219,8 +219,12 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
 
-//        List<Cart> carts = cartRepository.findCartsByProductId(productId);
-//        carts.forEach((cart) -> cartService.deleteProductFromCart(cart.getCartId(), productId));
+        List<CartItem> cartItems = cartItemRepository.findCartItemByProduct(product);
+
+        cartItems.forEach((cartItem) -> {
+            Cart cart = cartItem.getCart();
+            cart.setTotalPrice(cart.getTotalPrice() - (product.getSpecialPrice() * cartItem.getQuantity()));
+        });
 
         productRepository.delete(product);
 

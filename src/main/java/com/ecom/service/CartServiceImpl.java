@@ -38,7 +38,7 @@ public class CartServiceImpl implements CartService {
     public CartDTO addProductToCart(Long productId, Integer quantity) {
 
         Cart cart = cartRepository.findByUserEmail(authUtil.getLoggedInUserEmail())
-                .orElseThrow(() -> new APIException("Cant find cart for user " + authUtil.getLoggedInUsername()));
+                .orElseThrow(() -> new APIException("No cart found for user " + authUtil.getLoggedInUsername()));
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
@@ -109,7 +109,7 @@ public class CartServiceImpl implements CartService {
     public CartDTO getUserCart() {
 
         Cart cart = cartRepository.findByUserEmail(authUtil.getLoggedInUserEmail())
-                .orElseThrow(() -> new APIException("Cant find cart for user " + authUtil.getLoggedInUsername()));
+                .orElseThrow(() -> new APIException("No cart found for user " + authUtil.getLoggedInUsername()));
 
         if(cart.getCartItems().isEmpty()){
             throw new APIException("Cart is empty");
@@ -142,7 +142,7 @@ public class CartServiceImpl implements CartService {
         Integer quantity = operation.equalsIgnoreCase("add") ? 1 : -1;
 
         Cart cart = cartRepository.findByUserEmail(authUtil.getLoggedInUserEmail())
-                .orElseThrow(() -> new APIException("Cant find cart for user " + authUtil.getLoggedInUsername()));
+                .orElseThrow(() -> new APIException("No cart found for user " + authUtil.getLoggedInUsername()));
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
@@ -193,7 +193,7 @@ public class CartServiceImpl implements CartService {
 
         return modelMapper.map(cartItem.getProduct(), ProductDTO.class);
     }
-//
+
 //    @Override
 //    public void updateProductInCarts(Long cartId, Long productId) {
 //        Cart cart = cartRepository.findById(cartId)
@@ -218,7 +218,7 @@ public class CartServiceImpl implements CartService {
 //        cartRepository.save(cart);
 //
 //    }
-//
+
 
 }
 

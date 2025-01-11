@@ -10,27 +10,26 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "cart_items")
+@Table(name = "order_items")
 @Builder
-public class CartItem {
+public class OrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long cartItemId;
+    private Long orderItemId;
 
-    // Owning Side
-    @ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
-    @JoinColumn(name = "cart_id")
-    private Cart cart;
-
-    // Owning Side
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
+
     private Integer quantity;
     private Double discount;
-    private Double productPrice;
+    private Double orderedProductPrice;
+
 
 
 }
