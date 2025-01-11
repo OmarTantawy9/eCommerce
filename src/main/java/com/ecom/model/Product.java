@@ -46,9 +46,9 @@ public class Product {
     @JoinColumn(name = "category_id")
     private Category category;
 
-//    @ManyToOne
-//    @JoinColumn(name = "seller_id")
-//    private User seller;
+    @ManyToOne
+    @JoinColumn(name = "seller_id")
+    private User seller;
 
 
     // Non-Owning Side

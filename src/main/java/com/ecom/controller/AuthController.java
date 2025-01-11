@@ -1,6 +1,7 @@
 package com.ecom.controller;
 
 import com.ecom.model.AppRole;
+import com.ecom.model.Cart;
 import com.ecom.model.Role;
 import com.ecom.model.User;
 import com.ecom.repository.RoleRepository;
@@ -129,6 +130,9 @@ public class AuthController {
         }
 
         user.setRoles(roles);
+        Cart cart = new Cart();
+        cart.setUser(user);
+        user.setCart(cart);
         userRepository.save(user);
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));

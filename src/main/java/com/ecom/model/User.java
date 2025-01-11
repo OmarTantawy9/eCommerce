@@ -14,13 +14,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(
-        name = "users"
-//        uniqueConstraints = {
-//                @UniqueConstraint(columnNames = "username"),
-//                @UniqueConstraint(columnNames = "email")
-//        }
-)
+@Table(name = "users")
 public class User {
 
     @Id
@@ -60,24 +54,24 @@ public class User {
         this.password = encode;
     }
 
-//    @OneToMany(
-//            mappedBy = "seller",
-//            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
-//            orphanRemoval = true,
-//            fetch = FetchType.LAZY
-//    )
-//    private Set<Product> products = new HashSet<>();
+    @OneToOne(
+            mappedBy = "user",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}
+    )
+    private Cart cart;
+
+
+    @OneToMany(
+            mappedBy = "seller",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}
+    )
+    private Set<Product> products;
 
 //    @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 //    private List<Address> addresses =  new ArrayList<>();
 
 
 
-//    @OneToOne(
-//            mappedBy = "user",
-//            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
-//            orphanRemoval = true
-//    )
-//    private Cart cart;
+
 
 }
