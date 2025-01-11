@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -67,8 +68,11 @@ public class User {
     )
     private Set<Product> products;
 
-//    @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-//    private List<Address> addresses =  new ArrayList<>();
+    @OneToMany(
+            mappedBy = "user",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}
+    )
+    private List<Address> addresses;
 
 
 
